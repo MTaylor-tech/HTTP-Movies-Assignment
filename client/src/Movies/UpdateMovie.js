@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, Redirect } from "react-router-dom";
 
-function UpdateMovie({history}) {
+function UpdateMovie(props) {
   const [movie, setMovie] = useState({
     title: '',
     director: '',
@@ -19,6 +19,7 @@ function UpdateMovie({history}) {
       .post('http://localhost:5001/api/movies',movie)
       .then(res=>{
         console.log(res);
+        props.getMovieList();
         setRedirect('/');
       })
       .catch(err=>console.log(err.response));
@@ -27,6 +28,7 @@ function UpdateMovie({history}) {
       .put(`http://localhost:5001/api/movies/${id}`, movie)
       .then((res) =>{
         console.log(res);
+        props.getMovieList();
         setRedirect(`/`);
       })
       .catch((err) => console.log(err.response));
