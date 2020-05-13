@@ -15,6 +15,18 @@ function Movie({ addToSavedList }) {
       .catch((err) => console.log(err.response));
   };
 
+  const deleteMovie = (id) => {
+      if (window.confirm('Are you sure?')){
+        axios
+        .delete(`http://localhost:5001/api/movies/${id}`)
+        .then((res)=> {
+          console.log(res);
+          setRedirect('/');
+        })
+        .catch((err)=>console.log(err.response));
+      }
+  };
+
   const saveMovie = () => {
     addToSavedList(movie);
   };
@@ -28,7 +40,7 @@ function Movie({ addToSavedList }) {
   }
 
   if (redirect) {
-    return <Redirect to={`/update-movie/${movie.id}`} />
+    return <Redirect to={redirect} />
   }
 
   return (
@@ -39,8 +51,12 @@ function Movie({ addToSavedList }) {
         Save
       </div>
 
-      <div className="edit-button" onClick={()=>setRedirect(true)}>
+      <div className="edit-button" onClick={()=>setRedirect(`/update-movie/${movie.id}`)}>
         Edit
+      </div>
+
+      <div className="delete-button" onClick={()=>deleteMovie(movie.id)}>
+        Delete
       </div>
     </div>
   );
