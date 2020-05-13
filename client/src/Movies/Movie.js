@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, Redirect } from "react-router-dom";
 import MovieCard from "./MovieCard";
 
 function Movie({ addToSavedList }) {
   const [movie, setMovie] = useState(null);
   const params = useParams();
+  const [redirect, setRedirect] = useState(false);
 
   const fetchMovie = (id) => {
     axios
@@ -26,12 +27,20 @@ function Movie({ addToSavedList }) {
     return <div>Loading movie information...</div>;
   }
 
+  if (redirect) {
+    return <Redirect to={`/update-movie/${movie.id}`} />
+  }
+
   return (
     <div className="save-wrapper">
       <MovieCard movie={movie} />
 
       <div className="save-button" onClick={saveMovie}>
         Save
+      </div>
+
+      <div className="edit-button" onClick={()=>setRedirect(true)}>
+        Edit
       </div>
     </div>
   );

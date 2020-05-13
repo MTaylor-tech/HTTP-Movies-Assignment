@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, Redirect } from "react-router-dom";
 
-function UpdateMovie(props) {
+function UpdateMovie({history}) {
   const [movie, setMovie] = useState(null);
   const params = useParams();
+  const [redirect, setRedirect] = useState(null);
+  const [stars, setStars] = useState([]);
 
   const updateMovie = (id) => {
     axios
       .put(`http://localhost:5001/api/movies/${id}`, movie)
       .then((res) =>{
         console.log(res);
-        props.history.push(`/movies/${id}`);
+        setRedirect(`/`);
       })
       .catch((err) => console.log(err.response));
   };
@@ -19,7 +21,10 @@ function UpdateMovie(props) {
   const fetchMovie = (id) => {
     axios
       .get(`http://localhost:5001/api/movies/${id}`)
-      .then((res) => setMovie(res.data))
+      .then((res) => {
+        setMovie(res.data);
+        setStars(res.data.stars);
+      })
       .catch((err) => console.log(err.response));
   };
 
@@ -30,12 +35,41 @@ function UpdateMovie(props) {
     });
   };
 
+  const handleStarChange = (i,e) => {
+    if (movie != null) {
+      const newStars = stars.map((s,index)=>{
+        if (index!==i) {
+          return s;
+        } else {
+          return e.target.value;
+        }
+      });
+      setStars(newStars);
+      setMovie({
+        ...movie,
+        stars: newStars
+      });
+    }
+  };
+
+  const handleNewStar = e => {
+    setStars([...stars, ""]);
+    setMovie({
+      ...movie,
+      stars: [...stars, ""]
+    });
+  };
+
   useEffect(() => {
     fetchMovie(params.id);
   }, [params.id]);
 
   if (!movie) {
     return <div>Loading movie information...</div>;
+  }
+
+  if (redirect) {
+    return <Redirect to={redirect} />
   }
 
   return (
@@ -53,11 +87,14 @@ function UpdateMovie(props) {
         </div>
         <h3>Actors</h3>
 
-        {movie.stars.map(star => (
-          <div key={star} className="movie-star">
-            {star}
+        {stars.map((star, index)=> (
+          <div key={index} className="movie-star">
+            <input name={index} id={index} value={star} onChange={(event)=>handleStarChange(index, event)} />
           </div>
         ))}
+        <div className="movie-star">
+          <i className="fa fa-plus" onClick={handleNewStar} />
+        </div>
       </div>
 
       <div className="save-button" onClick={()=>updateMovie(params.id)}>
