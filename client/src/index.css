@@ -101,3 +101,7 @@ body {
   color: red;
   text-align: center;
 }
+
+i {
+  margin: 10px;
+}
