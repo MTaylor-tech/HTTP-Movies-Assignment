@@ -3,19 +3,34 @@ import axios from "axios";
 import { useParams, Redirect } from "react-router-dom";
 
 function UpdateMovie({history}) {
-  const [movie, setMovie] = useState(null);
+  const [movie, setMovie] = useState({
+    title: '',
+    director: '',
+    metascore: '',
+    stars: []
+  });
   const params = useParams();
   const [redirect, setRedirect] = useState(null);
   const [stars, setStars] = useState([]);
 
   const updateMovie = (id) => {
-    axios
+    if (id==='new'){
+      axios
+      .post('http://localhost:5001/api/movies',movie)
+      .then(res=>{
+        console.log(res);
+        setRedirect('/');
+      })
+      .catch(err=>console.log(err.response));
+    } else {
+      axios
       .put(`http://localhost:5001/api/movies/${id}`, movie)
       .then((res) =>{
         console.log(res);
         setRedirect(`/`);
       })
       .catch((err) => console.log(err.response));
+    }
   };
 
   const fetchMovie = (id) => {
@@ -70,7 +85,9 @@ function UpdateMovie({history}) {
   }
 
   useEffect(() => {
-    fetchMovie(params.id);
+    if (params.id!=='new') {
+      fetchMovie(params.id);
+    }
   }, [params.id]);
 
   if (!movie) {
