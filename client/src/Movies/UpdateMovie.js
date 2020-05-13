@@ -60,6 +60,15 @@ function UpdateMovie({history}) {
     });
   };
 
+  const handleRemoveStar = i => {
+    const newStars = stars.filter((s,index)=>index!==i);
+    setStars(newStars);
+    setMovie({
+      ...movie,
+      stars: newStars
+    });
+  }
+
   useEffect(() => {
     fetchMovie(params.id);
   }, [params.id]);
@@ -90,6 +99,7 @@ function UpdateMovie({history}) {
         {stars.map((star, index)=> (
           <div key={index} className="movie-star">
             <input name={index} id={index} value={star} onChange={(event)=>handleStarChange(index, event)} />
+            <i className="fa fa-minus" onClick={()=>handleRemoveStar(index)} />
           </div>
         ))}
         <div className="movie-star">
